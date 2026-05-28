@@ -1,19 +1,13 @@
 from dotenv import load_dotenv
-import ssl
-import httpx
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 
-http_client = httpx.Client(verify=False)
-
 load_dotenv()
 
-llm = ChatGroq(model="llama-3.3-70b-versatile",http_client=http_client,)
-
+llm = ChatGroq(model="llama-3.3-70b-versatile")
 
 def main():
-    print("Hello from langchain!")
-    llm_response = llm.invoke("What is the capital of France?")
+    llm_response = llm.invoke("What are the listed REITS in India?")
     print(llm_response.content)
 
 
