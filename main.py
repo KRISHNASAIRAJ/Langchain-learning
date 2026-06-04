@@ -5,6 +5,10 @@ from langchain_core.messages import HumanMessage
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_groq import ChatGroq
+#LCEL Imports
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+
 
 load_dotenv()
 
@@ -32,6 +36,33 @@ def format_docs(docs):
     """Act as portfolio agent. Answer the questions without any bias. Try to be honest even if it is not in favour of me."""
     return "\n\n".join(doc.page_content for doc in docs)
 
+"""
+"What is the total investment?"
+                              │
+                 ┌────────────┴────────────┐
+                 │                         │
+        retriever | format_docs     RunnablePassthrough()
+                 │                         │
+        "BIRET reported..."        "What is the total investment?"
+                 │                         │
+             {context}               {question}
+                 └────────────┬────────────┘
+                              │
+                       prompt_template
+                              |
+                             llm
+                              |
+                        StrOutputParser
+"""
+chain=(
+    {
+        "context":retriever|format_docs,
+        "question":RunnablePassthrough()
+    } 
+    | prompt_template
+    | llm
+    | StrOutputParser()
+)
 # if __name__ == "__main__":
 #     query = "What is the Total Investment made?"
 #     docs = retriever.invoke(query) #retrieving relevant documents from the vector store based on the query
@@ -39,15 +70,26 @@ def format_docs(docs):
 #     messages = prompt_template.format_messages(context=context, question=query) #formatting the prompt with the retrieved context and the original query
 #     response = llm.invoke(messages) #getting the response from the LLM based on the formatted prompt
 #     print(response.content)
+# if __name__ == "__main__":
+#     print("Chatbot ready! Type 'exit' to quit.")
+#     while True:
+#         query = input("\nYou: ")
+#         if query.lower() == "exit":
+#             print("Goodbye!")
+#             break
+#         docs = retriever.invoke(query)
+#         context = format_docs(docs)
+#         messages = prompt_template.format_messages(context=context, question=query)
+#         response = llm.invoke(messages)
+#         print(f"\nBot: {response.content}")
+
+
 if __name__ == "__main__":
     print("Chatbot ready! Type 'exit' to quit.")
     while True:
         query = input("\nYou: ")
         if query.lower() == "exit":
-            print("Goodbye!")
+            print("Thanks you'r session has been ended!")
             break
-        docs = retriever.invoke(query)
-        context = format_docs(docs)
-        messages = prompt_template.format_messages(context=context, question=query)
-        response = llm.invoke(messages)
-        print(f"\nBot: {response.content}")
+        response = chain.invoke(query)  # one single call replaces 4 steps
+        print(f"\nBot: {response}")

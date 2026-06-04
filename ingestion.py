@@ -14,7 +14,7 @@ if __name__ == "__main__":
     document = loader.load() #loading the source as a document by langchain
     
     print("Splitting the document into chunks...")
-    text_splitter=CharacterTextSplitter(chunk_size=1000, chunk_overlap=0) #splitting the document into chunks of 1000 characters with no overlap
+    text_splitter=CharacterTextSplitter(chunk_size=1000, chunk_overlap=100) #splitting the document into chunks of 1000 characters with no overlap
     texts=text_splitter.split_documents(document)
     
     # embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2") #creating the embedding model using HuggingFace
