@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
@@ -9,7 +9,8 @@ load_dotenv()
 
 if __name__ == "__main__":
     print("Ingesting the source data...")
-    loader=TextLoader("biretinvestor.txt",encoding="UTF-8") #path of your document
+    # loader=TextLoader("biretinvestor.txt",encoding="UTF-8") #path of your document
+    loader=PyPDFLoader("report.pdf")
     document = loader.load() #loading the source as a document by langchain
     
     print("Splitting the document into chunks...")

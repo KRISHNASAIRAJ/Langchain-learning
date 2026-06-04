@@ -25,17 +25,29 @@ prompt_template = ChatPromptTemplate.from_template(
     """Answer the question based only on the following context: 
     {context}
     Question: {question}
-    provide a detailed answer:"""
+    provide answers in structured format. Also add table whenever required."""
     )
 
 def format_docs(docs):
-    """Format retrieved documents into a single string."""
+    """Act as portfolio agent. Answer the questions without any bias. Try to be honest even if it is not in favour of me."""
     return "\n\n".join(doc.page_content for doc in docs)
 
+# if __name__ == "__main__":
+#     query = "What is the Total Investment made?"
+#     docs = retriever.invoke(query) #retrieving relevant documents from the vector store based on the query
+#     context = format_docs(docs) #formatting the retrieved documents into a single string to be used as context for the LLM
+#     messages = prompt_template.format_messages(context=context, question=query) #formatting the prompt with the retrieved context and the original query
+#     response = llm.invoke(messages) #getting the response from the LLM based on the formatted prompt
+#     print(response.content)
 if __name__ == "__main__":
-    query = "What is the Total Occupancy percentage of BIRET?"
-    docs = retriever.invoke(query) #retrieving relevant documents from the vector store based on the query
-    context = format_docs(docs) #formatting the retrieved documents into a single string to be used as context for the LLM
-    messages = prompt_template.format_messages(context=context, question=query) #formatting the prompt with the retrieved context and the original query
-    response = llm.invoke(messages) #getting the response from the LLM based on the formatted prompt
-    print(response.content)
+    print("Chatbot ready! Type 'exit' to quit.")
+    while True:
+        query = input("\nYou: ")
+        if query.lower() == "exit":
+            print("Goodbye!")
+            break
+        docs = retriever.invoke(query)
+        context = format_docs(docs)
+        messages = prompt_template.format_messages(context=context, question=query)
+        response = llm.invoke(messages)
+        print(f"\nBot: {response.content}")
