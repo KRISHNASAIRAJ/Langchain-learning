@@ -17,6 +17,7 @@ dependencies = [
     "langchain-openai>=0.3.31",
     "langchain-pinecone>=0.2.11",
     "langchainhub>=0.1.21",
+    "pinecone-text>=0.11.0",
     "pypdf>=6.12.2",
     "python-dotenv>=1.1.1",
     "sentence-transformers>=5.5.1",
